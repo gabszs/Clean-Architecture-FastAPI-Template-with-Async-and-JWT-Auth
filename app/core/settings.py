@@ -22,8 +22,7 @@ class Settings(BaseSettings):
 
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
     TEST_DATABASE_URL: str
-    # TEST_DATABASE_URL: str = "postgresql+asyncpg://app_user:app_password@localhost:5433/app_db"
-    OPENAI_API_KEY: str
+
 
     PAGE: int = 1
     PAGE_SIZE: int = 20

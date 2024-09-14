@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "corpsystem-test"
+name = "authservice"
 version = "0.1.0"
 description = ""
 authors = ["GabrielCarvalho <gabrielcarvalho.workk@gmail.com>"]
