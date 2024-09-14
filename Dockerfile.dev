@@ -10,7 +10,11 @@ ENV POETRY_NO_INTERACTION=1 \
 WORKDIR app/
 
 COPY pyproject.toml poetry.lock ./
+
+#RUN touch README.md
+
 RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
+RUN poetry add pytest
 
 FROM python:3.11-slim-buster as runtime
 
@@ -24,6 +28,12 @@ COPY app ./app
 COPY alembic.ini ./
 COPY migrations ./migrations
 COPY entrypoint.sh ./
+COPY tests ./tests
+RUN chmod +x ./entrypoint.sh
 
-EXPOSE 5000
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "5000", "app.main:app"]
+#RUN alembic init migrations \
+#    && alembic revision --autogenerate \
+#    && alembic upgrade head
+
+EXPOSE 8000
+# CMD ["uvicorn", "--host", "0.0.0.0", "app.main:app"]
