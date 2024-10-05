@@ -25,5 +25,5 @@ COPY alembic.ini ./
 COPY migrations ./migrations
 COPY entrypoint.sh ./
 
-EXPOSE 5000
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "5000", "app.main:app"]
+EXPOSE 80
+CMD ["sh", "-c", "alembic upgrade head && uvicorn --host 0.0.0.0 --port 80 app.main:app"]
