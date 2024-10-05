@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base
+from alembic.config import Config
+from alembic import command
 
 from app.core.settings import settings
 from app.models import Base
@@ -77,9 +79,9 @@ class DatabaseSessionManager:
     async def drop_all_from_base(self, connection: AsyncConnection, base_model: declarative_base):
         await connection.run_sync(base_model.metadata.drop_all)
 
-    # def run_migrations(self):
-    #     alembic_cfg = Config("alembic.ini")
-    #     command.upgrade(alembic_cfg, "head")
+    def run_migrations(self):
+        alembic_cfg = Config("alembic.ini")
+        command.upgrade(alembic_cfg, "head")
 
 
 sessionmanager = DatabaseSessionManager()

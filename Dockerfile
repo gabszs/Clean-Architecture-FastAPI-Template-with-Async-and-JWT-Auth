@@ -26,4 +26,7 @@ COPY migrations ./migrations
 COPY entrypoint.sh ./
 
 EXPOSE 80
+
+# CMD ["alembic", "upgrade", "head"]
 CMD ["sh", "-c", "alembic upgrade head && uvicorn --host 0.0.0.0 --port 80 app.main:app"]
+# CMD ["uvicorn", "--host", "0.0.0.0", "--port", "80", "app.main:app"]
