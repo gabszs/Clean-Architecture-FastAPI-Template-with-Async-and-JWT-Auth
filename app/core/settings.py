@@ -1,3 +1,4 @@
+from os import getenv
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -6,9 +7,13 @@ from pydantic_settings import SettingsConfigDict
 
 load_dotenv()
 
+env_path = None if bool(getenv("IS_PROD", default=False)) else "dev.env"
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=env_path, env_file_encoding="utf-8")
+
+    IS_PROD: bool
 
     DATABASE_URL: str
 
@@ -22,7 +27,6 @@ class Settings(BaseSettings):
 
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
     TEST_DATABASE_URL: str
-
 
     PAGE: int = 1
     PAGE_SIZE: int = 20
