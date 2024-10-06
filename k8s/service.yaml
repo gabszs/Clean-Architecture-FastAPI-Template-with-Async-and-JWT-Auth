@@ -5,7 +5,7 @@ metadata:
   namespace: video-to-audio-converter
 spec:
   type: LoadBalancer
-  loadBalancerIP: 192.168.1.76
+  loadBalancerIP: 192.168.1.86
   selector:
     app: authconverter
   ports:

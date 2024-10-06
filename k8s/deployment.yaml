@@ -28,4 +28,4 @@ spec:
             - configMapRef:
                 name: auth-converter-configmap
             - secretRef:
-                name: converter-secret
+                name: auth-converter-secret
