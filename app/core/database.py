@@ -2,6 +2,8 @@ import asyncio
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
+from alembic import command
+from alembic.config import Config
 from sqlalchemy.ext.asyncio import async_scoped_session
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import AsyncConnection
@@ -9,8 +11,6 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base
-from alembic.config import Config
-from alembic import command
 
 from app.core.settings import settings
 from app.models import Base
