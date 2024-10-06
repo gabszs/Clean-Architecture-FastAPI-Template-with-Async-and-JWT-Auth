@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from pydantic_settings import SettingsConfigDict
 
+
 load_dotenv()
 
-env_path = None if bool(getenv("IS_PROD", default=False)) else "dev.env"
+env_path = None if getenv("IS_PROD", default="false") == "true" else "dev.env"
 
 
 class Settings(BaseSettings):
