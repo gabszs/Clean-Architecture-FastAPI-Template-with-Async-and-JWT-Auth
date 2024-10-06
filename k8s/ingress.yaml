@@ -1,0 +1,25 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: auth-converter-ingress
+  namespace: video-to-audio-converter
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`www.converter-svc.portfile.dev`)
+      kind: Rule
+      services:
+        - name: auth-converter-svc
+          port: 80
+    - match: Host(`converter-svc.portfile.dev`)
+      kind: Rule
+      services:
+        - name: auth-converter-svc
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secretName: portfile-tls

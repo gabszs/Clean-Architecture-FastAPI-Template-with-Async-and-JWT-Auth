@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-converter-deployment
+  namespace: video-to-audio-converter
+  labels:
+    app: authconverter
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: authconverter
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: authconverter
+    spec:
+      containers:
+        - name: auth-converter
+          image: gabzsz/auth_converter:0.1.0
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: auth-converter-configmap
+            - secretRef:
+                name: converter-secret

@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth
+  name: auth-converter-svc
+  namespace: video-to-audio-converter
 spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.76
   selector:
-    app: auth
-  type: ClusterIP
+    app: authconverter
   ports:
-    - port: 5000
-      targetPort: 5000
-      protocol: TCP
+  - port: 80
+    targetPort: 80

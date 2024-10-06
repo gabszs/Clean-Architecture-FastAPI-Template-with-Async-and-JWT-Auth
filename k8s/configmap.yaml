@@ -1,9 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: auth-configmap
+  name: auth-converter-configmap
+  namespace: video-to-audio-converter
 data:
-  POSTGRES_HOST: postgres  # Altere para o IP do seu host Docker se necessário
-  POSTGRES_USER: ps_user
-  POSTGRES_DB: ps_db
-  POSTGRES_PORT: "5432"
+  IS_PROD: "true"  # Altere para o IP do seu host Docker se necessário
+  ACCESS_TOKEN_EXPIRE_MINUTES: "120"
+  DATETIME_FORMAT: "%Y-%m-%dT%H:%M:%S"
+  PAGE: "1"
+  PAGE_SIZE: "10"
+  ORDERING: "-created_at"
+
