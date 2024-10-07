@@ -19,9 +19,6 @@ env:
   SECRET_KEY: ""
   ALGORITHM:  ${{ secrets.ALGORITHM }}
   ACCESS_TOKEN_EXPIRE_MINUTES: 30
-  POSTGRES_USER: ""
-  POSTGRES_PASSWORD: ""
-  POSTGRES_DB: ""
   PAGE: "1"
   PAGE_SIZE:  "10"
   ORDERING: "-created_at"
