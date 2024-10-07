@@ -1,5 +1,8 @@
 name: Develop-Pipeline
-on: [push]
+on:
+  push:
+    branches:
+      - develop
 
 jobs:
   test:
