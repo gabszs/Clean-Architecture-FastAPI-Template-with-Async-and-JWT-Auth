@@ -19,7 +19,6 @@ ENV VIRTUAL_ENV=/app/.venv \
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-COPY .env ./
 COPY app ./app
 COPY alembic.ini ./
 COPY migrations ./migrations
