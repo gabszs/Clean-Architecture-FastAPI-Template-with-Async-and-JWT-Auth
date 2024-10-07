@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
 
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
-    TEST_DATABASE_URL: Optional[str]
+    TEST_DATABASE_URL: Optional[str] = None
 
     PAGE: int = 1
     PAGE_SIZE: int = 20
