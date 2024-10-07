@@ -22,7 +22,6 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY app ./app
 COPY alembic.ini ./
 COPY migrations ./migrations
-COPY entrypoint.sh ./
 
 EXPOSE 80
 
