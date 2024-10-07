@@ -38,7 +38,7 @@ jobs:
           POSTGRES_PASSWORD: ${{vars.TEST_POSTGRES_PASSWORD}}
           POSTGRES_USER: ${{vars.TEST_POSTGRES_USER}}
         ports:
-          - 5432:5432
+          - 5433:5432
 
     steps:
       - name: Cloning the Repository
