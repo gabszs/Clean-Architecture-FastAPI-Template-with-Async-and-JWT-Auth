@@ -1,18 +1,11 @@
-from os import getenv
 from typing import Optional
 
-from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from pydantic_settings import SettingsConfigDict
 
 
-load_dotenv()
-
-env_path = None if getenv("IS_PROD", default="false") == "true" else "dev.env"
-
-
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=env_path, env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=("dev.env", ".env"), env_file_encoding="utf-8")
 
     IS_PROD: bool
 
@@ -21,7 +14,6 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
-
 
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
     TEST_DATABASE_URL: Optional[str] = None

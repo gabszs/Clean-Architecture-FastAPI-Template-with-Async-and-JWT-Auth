@@ -11,11 +11,13 @@ from app.core.exceptions import AuthError
 from app.core.security import JWTBearer
 from app.core.settings import settings
 from app.models import User
-from app.repository.user_repository import UserRepository
+from app.repository import TenantRepository
+from app.repository import UserRepository
 from app.schemas.auth_schema import Payload
 from app.schemas.base_schema import FindBase
-from app.services.auth_service import AuthService
-from app.services.user_service import UserService
+from app.services import AuthService
+from app.services import TenantService
+from app.services import UserService
 
 
 async def get_user_service(session: Session = Depends(get_session_factory)):
@@ -46,9 +48,15 @@ async def get_auth_service(session: Session = Depends(get_session_factory)):
     return AuthService(user_repository=user_repository)
 
 
+async def get_tenant_service(session: Session = Depends(get_session_factory)):
+    tenant_repository = TenantRepository(session_factory=session)
+    return TenantService(tenant_repository=tenant_repository)
+
+
 FindQueryParameters = Annotated[FindBase, Depends()]
 SessionDependency = Annotated[Session, Depends(get_db)]
 UserServiceDependency = Annotated[UserService, Depends(get_user_service)]
 CurrentUserDependency = Annotated[User, Depends(get_current_user)]
 AuthServiceDependency = Annotated[AuthService, Depends(get_auth_service)]
+TenantServiceDependency = Annotated[TenantService, Depends(get_tenant_service)]
 CurrentActiveUserDependency = Annotated[User, Depends(get_current_active_user)]

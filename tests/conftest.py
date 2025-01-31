@@ -32,7 +32,7 @@ from tests.schemas import UserModelSetup
 from tests.schemas import UserSchemaWithHashedPassword
 
 
-sync_db_url = settings.TEST_DATABASE_URL.replace("+asyncpg", "")
+sync_db_url = settings.TEST_DATABASE_URL.replace("+asyncpg", "")  # type: ignore
 
 
 @pytest.fixture

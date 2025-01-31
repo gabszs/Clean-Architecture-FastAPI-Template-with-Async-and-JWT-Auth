@@ -15,6 +15,7 @@ sqlalchemy = {extras = ["postgresql-asyncpg"], version = "^2.0.29"}
 psycopg-binary = "^3.1.18"
 alembic = "^1.13.1"
 asyncpg = "^0.29.0"
+python-slugify = "^8.0.4"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -29,7 +30,8 @@ ipykernel = "^6.29.3"
 pytest = "^8.1.1"
 pytest-postgresql = "^6.0.0"
 icecream = "^2.1.3"
-psycopg2 = "^2.9.9"
+psycopg2-binary = "^2.9.10"
+types-python-slugify = "^8.0.2.20240310"
 
 
 [build-system]
@@ -45,6 +47,8 @@ verbose_test = 'pytest --verbose --show-capture=all --exitfirst --cov=app --cov-
 commit_hook = "pre-commit run --all-files"
 post_verbose_test = 'coverage html'
 post_test = 'coverage html'
+pre_setup = 'docker run -d --name multi-tenancy -e POSTGRES_USER=app_user -e POSTGRES_PASSWORD=app_password -e POSTGRES_DB=app_db -p 5432:5432 postgres:14'
+setup = 'alembic upgrade head'
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
