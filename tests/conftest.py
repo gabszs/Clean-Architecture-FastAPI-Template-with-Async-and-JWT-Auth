@@ -25,9 +25,11 @@ from app.main import app
 from app.models import Base
 from app.models import User
 from app.models.models_enums import UserRoles
+from tests.factories import RoleFactory
 from tests.factories import TenantFactory
 from tests.factories import UserFactory
 from tests.helpers import add_users_models
+from tests.helpers import setup_role_data
 from tests.helpers import setup_tenant_data
 from tests.helpers import token
 from tests.schemas import UserModelSetup
@@ -217,3 +219,18 @@ async def tenants(session: AsyncSession):
 @pytest.fixture
 def tenant_factory() -> TenantFactory:
     return TenantFactory()
+
+
+@pytest.fixture()
+async def role(session: AsyncSession):
+    return await setup_role_data(session, index=0)
+
+
+@pytest.fixture()
+async def roles(session: AsyncSession):
+    return await setup_role_data(session, role_qty=5, index=0)
+
+
+@pytest.fixture
+def role_factory() -> TenantFactory:
+    return RoleFactory()

@@ -11,14 +11,18 @@ from app.core.security import get_password_hash
 from app.core.settings import settings
 from app.models import User
 from app.models.models_enums import UserRoles
+from app.schemas.role_schema import Role
 from app.schemas.tenant_schema import Tenant
 from tests.factories import create_factory_users
+from tests.factories import RoleFactory
 from tests.factories import TenantFactory
 from tests.schemas import UserModelSetup
 from tests.schemas import UserSchemaWithHashedPassword
 
 
-async def setup_tenant_data(session: AsyncSession, tenant_qty: int = 1, index: Optional[int] = None) -> List[Tenant]:
+async def setup_tenant_data(
+    session: AsyncSession, tenant_qty: int = 1, index: Optional[int] = None
+) -> Union[List[Tenant], Tenant]:
     tenants = TenantFactory.create_batch(tenant_qty)
     tenant_list: List[Tenant] = []
     session.add_all(tenants)
@@ -39,6 +43,35 @@ async def setup_tenant_data(session: AsyncSession, tenant_qty: int = 1, index: O
     if index is not None:
         return tenant_list[index]
     return tenant_list
+
+
+async def setup_role_data(
+    session: AsyncSession, role_qty: int = 1, index: Optional[int] = None
+) -> Union[List[Role], Role]:
+    tenant = await setup_tenant_data(session, index=0)
+    tenant_id = tenant.id  # type: ignore
+
+    roles = RoleFactory.create_batch(role_qty, tenant_id=tenant_id)
+    role_list: List[Role] = []
+    session.add_all(roles)
+    await session.commit()
+
+    for role in roles:
+        await session.refresh(role)
+        role_list.append(
+            Role(
+                tenant_id=role.tenant_id,
+                name=role.name,
+                description=role.description,
+                id=role.id,
+                created_at=role.created_at,
+                updated_at=role.updated_at,
+            )
+        )
+
+    if index is not None:
+        return role_list[index]
+    return role_list
 
 
 def validate_datetime(data_string):

@@ -5,6 +5,7 @@ import factory
 from factory.base import StubObject
 from slugify import slugify  # type: ignore
 
+from app.models import Role
 from app.models import Tenant
 from app.models import User
 from app.models.models_enums import UserRoles
@@ -41,6 +42,15 @@ class TenantFactory(factory.Factory):
 
     name = factory.Sequence(lambda x: f"domain.{x}")
     slug = factory.LazyAttribute(lambda x: slugify(x.name))
+
+
+class RoleFactory(factory.Factory):
+    class Meta:
+        model = Role
+
+    tenant_id = None
+    name = factory.Sequence(lambda x: f"role_{x}")
+    description = factory.LazyAttribute(lambda x: f"{x.name} description")
 
 
 def create_factory_users(users_qty: int = 1, user_role: UserRoles = UserRoles.BASE_USER, is_active=True):
