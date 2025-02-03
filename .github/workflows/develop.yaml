@@ -1,8 +1,11 @@
 name: Develop-Pipeline
 on:
   push:
-    branches:
-      - develop
+    branches-ignore:
+      - master
+  pull_request:
+    branches-ignore:
+      - master
 
 jobs:
   test:
