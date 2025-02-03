@@ -54,6 +54,7 @@ async def test_create_same_roles_with_diferent_should_return_201_POST(client, se
         headers=admin_user_token,
     )
     response_json = response.json()
+    
     assert response.status_code == 201
     assert response_json["name"] == role.name
     assert response_json["description"] == role.description
@@ -149,6 +150,7 @@ async def test_delete_role_should_return_403_FORBIDDEN_DELETE(
 async def test_get_role_by_id_should_return_200_OK_GET(session, client, role, admin_user_token):
     response = await client.get(f"{base_role_route}/{role.id}", headers=admin_user_token)
     response_json = response.json()
+
     assert response.status_code == 200
     assert response_json["name"] == role.name
     assert response_json["description"] == role.description
@@ -160,6 +162,7 @@ async def test_get_role_by_id_should_return_200_OK_GET(session, client, role, ad
 @pytest.mark.anyio
 async def test_get_role_by_id_should_return_404_NOT_FOUND_GET(session, client, random_uuid, admin_user_token):
     response = await client.get(f"{base_role_route}/{random_uuid}", headers=admin_user_token)
+
     assert response.status_code == 404
     assert response.json() == {"detail": f"id not found: {random_uuid}"}
 
@@ -173,7 +176,7 @@ async def test_put_role_should_return_200_OK_PUT(session, client, role_factory, 
         "name": role_factory.name,
         "description": role_factory.description,
     }
-    ic(different_role)
+
     response = await client.put(f"{base_role_route}/{role.id}", headers=admin_user_token, json=different_role)
     response_json = response.json()
     assert response.status_code == 200
@@ -192,6 +195,7 @@ async def test_put_other_id_role_should_return_404_NOT_FOUND_PUT(
     }
     response = await client.put(f"{base_role_route}/{random_uuid}", headers=admin_user_token, json=different_role)
     response_json = response.json()
+
     assert response.status_code == 404
     assert response_json == {"detail": f"id not found: {random_uuid}"}
 
@@ -204,6 +208,7 @@ async def test_put_same_role_should_return_400_BAD_REQUEST_PUT(session, client, 
     }
     response = await client.put(f"{base_role_route}/{role.id}", headers=admin_user_token, json=different_role)
     response_json = response.json()
+
     assert response.status_code == 400
     assert response_json == {"detail": "No changes detected"}
 
@@ -215,6 +220,7 @@ async def test_put_role_should_return_403_FORBIDDEN(session, client, role_factor
         "description": role_factory.description,
     }
     response = await client.put(f"{base_role_route}/{role.id}", headers=normal_user_token, json=different_role)
+    
     assert response.json() == {"detail": "Not enough permissions"}
     assert response.status_code == 403
 
