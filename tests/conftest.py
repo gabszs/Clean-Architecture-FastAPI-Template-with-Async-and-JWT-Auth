@@ -25,8 +25,10 @@ from app.main import app
 from app.models import Base
 from app.models import User
 from app.models.models_enums import UserRoles
+from tests.factories import TenantFactory
 from tests.factories import UserFactory
 from tests.helpers import add_users_models
+from tests.helpers import setup_tenant_data
 from tests.helpers import token
 from tests.schemas import UserModelSetup
 from tests.schemas import UserSchemaWithHashedPassword
@@ -200,3 +202,18 @@ async def admin_user(session: AsyncSession) -> List[Union[UserSchemaWithHashedPa
 @pytest.fixture()
 async def disable_normal_user(session: AsyncSession) -> List[Union[UserSchemaWithHashedPassword, User]]:
     return await add_users_models(session, index=0, user_role=UserRoles.BASE_USER, is_active=False)
+
+
+@pytest.fixture()
+async def tenant(session: AsyncSession):
+    return await setup_tenant_data(session, index=0)
+
+
+@pytest.fixture()
+async def tenants(session: AsyncSession):
+    return await setup_tenant_data(session, tenant_qty=5, index=0)
+
+
+@pytest.fixture
+def tenant_factory() -> TenantFactory:
+    return TenantFactory()

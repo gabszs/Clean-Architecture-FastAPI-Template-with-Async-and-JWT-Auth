@@ -11,9 +11,34 @@ from app.core.security import get_password_hash
 from app.core.settings import settings
 from app.models import User
 from app.models.models_enums import UserRoles
+from app.schemas.tenant_schema import Tenant
 from tests.factories import create_factory_users
+from tests.factories import TenantFactory
 from tests.schemas import UserModelSetup
 from tests.schemas import UserSchemaWithHashedPassword
+
+
+async def setup_tenant_data(session: AsyncSession, tenant_qty: int = 1, index: Optional[int] = None) -> List[Tenant]:
+    tenants = TenantFactory.create_batch(tenant_qty)
+    tenant_list: List[Tenant] = []
+    session.add_all(tenants)
+    await session.commit()
+
+    for tenant in tenants:
+        await session.refresh(tenant)
+        tenant_list.append(
+            Tenant(
+                name=tenant.name,
+                slug=tenant.slug,
+                id=tenant.id,
+                created_at=tenant.created_at,
+                updated_at=tenant.updated_at,
+            )
+        )
+
+    if index is not None:
+        return tenant_list[index]
+    return tenant_list
 
 
 def validate_datetime(data_string):

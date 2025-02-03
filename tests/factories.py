@@ -3,7 +3,9 @@ from typing import Dict
 
 import factory
 from factory.base import StubObject
+from slugify import slugify  # type: ignore
 
+from app.models import Tenant
 from app.models import User
 from app.models.models_enums import UserRoles
 
@@ -31,6 +33,14 @@ class UserFactory(factory.Factory):
     password = factory.LazyAttribute(lambda obj: f"{obj.username}_password")
     role = UserRoles.BASE_USER
     is_active = None
+
+
+class TenantFactory(factory.Factory):
+    class Meta:
+        model = Tenant
+
+    name = factory.Sequence(lambda x: f"domain.{x}")
+    slug = factory.LazyAttribute(lambda x: slugify(x.name))
 
 
 def create_factory_users(users_qty: int = 1, user_role: UserRoles = UserRoles.BASE_USER, is_active=True):
