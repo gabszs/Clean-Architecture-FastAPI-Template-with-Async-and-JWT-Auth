@@ -1,0 +1,31 @@
+{
+  "founds": [
+    {
+      "id": "f507b63c-320a-46f5-90da-f3bcd6f893f5",
+      "created_at": "2025-02-03T04:11:09.657760Z",
+      "updated_at": "2025-02-03T04:11:09.657760Z",
+      "name": "globo.com",
+      "slug": "globo-com"
+    },
+    {
+      "id": "bc22f0d8-a063-47d1-b351-76b06bd22060",
+      "created_at": "2025-02-03T04:11:38.679343Z",
+      "updated_at": "2025-02-03T04:11:38.679343Z",
+      "name": "bet.br",
+      "slug": "bet-br"
+    },
+    {
+      "id": "70d0b120-04c1-4217-a0d2-913193cd6c7d",
+      "created_at": "2025-02-03T04:11:33.294223Z",
+      "updated_at": "2025-02-03T04:11:33.294223Z",
+      "name": "gov.br",
+      "slug": "gov-br"
+    }
+  ],
+  "search_options": {
+    "ordering": "-id",
+    "page": 1,
+    "page_size": 20,
+    "total_count": 3
+  }
+}
