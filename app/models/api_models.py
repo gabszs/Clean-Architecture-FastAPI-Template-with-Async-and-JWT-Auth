@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 from app.models.base_model import Base
+from app.models.models_enums import DatabaseType
 from app.models.models_enums import UserRoles
 
 
@@ -35,3 +36,13 @@ class Role(Base):
     description: Mapped[Optional[str]]
 
     __table_args__ = (UniqueConstraint("tenant_id", "name", name="uq_tenant_name"),)
+
+
+class Database(Base):
+    __tablename__ = "databases"
+
+    # user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    name: Mapped[str] = mapped_column(nullable=False)
+    db_type: Mapped[DatabaseType] = mapped_column(nullable=False)
+    connection_string: Mapped[str] = mapped_column(unique=True, nullable=False)
+    description: Mapped[Optional[str]]

@@ -13,12 +13,14 @@ from app.core.exceptions import NotFoundError
 from app.core.security import JWTBearer
 from app.core.settings import settings
 from app.models import User
+from app.repository import DatabaseRepository
 from app.repository import RoleRepository
 from app.repository import TenantRepository
 from app.repository import UserRepository
 from app.schemas.auth_schema import Payload
 from app.schemas.base_schema import FindBase
 from app.services import AuthService
+from app.services import DatabaseService
 from app.services import RoleService
 from app.services import TenantService
 from app.services import UserService
@@ -62,6 +64,11 @@ async def get_role_service(session: Session = Depends(get_session_factory)):
     return RoleService(role_repository=role_repository)
 
 
+async def get_database_service(session: Session = Depends(get_session_factory)):
+    database_repository = DatabaseRepository(session_factory=session)
+    return DatabaseService(database_repository=database_repository)
+
+
 FindQueryParameters = Annotated[FindBase, Depends()]
 SessionDependency = Annotated[Session, Depends(get_db)]
 UserServiceDependency = Annotated[UserService, Depends(get_user_service)]
@@ -69,4 +76,5 @@ CurrentUserDependency = Annotated[User, Depends(get_current_user)]
 AuthServiceDependency = Annotated[AuthService, Depends(get_auth_service)]
 TenantServiceDependency = Annotated[TenantService, Depends(get_tenant_service)]
 RoleServiceDependency = Annotated[RoleService, Depends(get_role_service)]
+DatabaseServiceDependency = Annotated[DatabaseService, Depends(get_database_service)]
 CurrentActiveUserDependency = Annotated[User, Depends(get_current_active_user)]
