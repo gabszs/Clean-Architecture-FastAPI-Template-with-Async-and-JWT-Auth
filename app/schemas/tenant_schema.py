@@ -31,7 +31,7 @@ class Tenant(BaseTenant, ModelBaseInfo):
         return value
 
 
-class UpsertTenant(BaseModel):
+class UpdateTenant(BaseModel):
     name: Optional[str]
 
 

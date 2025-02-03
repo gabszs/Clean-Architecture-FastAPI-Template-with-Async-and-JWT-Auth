@@ -11,7 +11,7 @@ from app.models.models_enums import UserRoles
 from app.schemas.tenant_schema import BaseTenant
 from app.schemas.tenant_schema import Tenant
 from app.schemas.tenant_schema import TenantList
-from app.schemas.tenant_schema import UpsertTenant
+from app.schemas.tenant_schema import UpdateTenant
 
 router = APIRouter(prefix="/tenant", tags=["tenant"])
 
@@ -40,7 +40,7 @@ async def create_tenant(user: BaseTenant, service: TenantServiceDependency):
 @router.put("/{tenant_id}", response_model=Tenant)
 @authorize(role=[UserRoles.MODERATOR, UserRoles.ADMIN], allow_same_id=True)
 async def update_tenant(
-    tenant_id: UUID, tenant: UpsertTenant, service: TenantServiceDependency, current_user: CurrentUserDependency
+    tenant_id: UUID, tenant: UpdateTenant, service: TenantServiceDependency, current_user: CurrentUserDependency
 ):
     return await service.patch(id=tenant_id, schema=tenant)
 
