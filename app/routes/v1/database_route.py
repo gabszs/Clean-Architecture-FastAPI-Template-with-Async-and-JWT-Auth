@@ -29,8 +29,8 @@ async def get_database_by_id(
 
 
 @router.post("/", status_code=201, response_model=Database)
-async def create_database(user: BaseDatabase, service: DatabaseServiceDependency):
-    return await service.add(user)
+async def create_database(database: BaseDatabase, service: DatabaseServiceDependency):
+    return await service.add(database)
 
 
 @router.put("/{database_id}", response_model=Database)

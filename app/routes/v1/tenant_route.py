@@ -31,8 +31,8 @@ async def get_tenant_by_id(tenant_id: UUID, service: TenantServiceDependency, cu
 
 
 @router.post("/", status_code=201, response_model=Tenant)
-async def create_tenant(user: BaseTenant, service: TenantServiceDependency):
-    return await service.add(user)
+async def create_tenant(tenant: BaseTenant, service: TenantServiceDependency):
+    return await service.add(tenant)
 
 
 ### importante tem de fazer

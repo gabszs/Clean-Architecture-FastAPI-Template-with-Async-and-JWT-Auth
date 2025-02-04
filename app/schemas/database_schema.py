@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 
 from app.models.models_enums import DatabaseType
-from app.models.models_enums import DatabaseType
 from app.schemas.base_schema import FindModelResult
 from app.schemas.base_schema import ModelBaseInfo
 

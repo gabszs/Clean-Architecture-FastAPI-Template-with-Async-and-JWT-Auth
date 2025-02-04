@@ -31,8 +31,8 @@ async def get_role_by_id(role_id: UUID, service: RoleServiceDependency, current_
 
 
 @router.post("/", status_code=201, response_model=Role)
-async def create_role(user: BaseRole, service: RoleServiceDependency):
-    return await service.add(user)
+async def create_role(role: BaseRole, service: RoleServiceDependency):
+    return await service.add(role)
 
 
 ### importante tem de fazer

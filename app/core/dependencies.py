@@ -14,6 +14,7 @@ from app.core.security import JWTBearer
 from app.core.settings import settings
 from app.models import User
 from app.repository import DatabaseRepository
+from app.repository import HistoryRepository
 from app.repository import RoleRepository
 from app.repository import TenantRepository
 from app.repository import UserRepository
@@ -21,6 +22,7 @@ from app.schemas.auth_schema import Payload
 from app.schemas.base_schema import FindBase
 from app.services import AuthService
 from app.services import DatabaseService
+from app.services import HistoryService
 from app.services import RoleService
 from app.services import TenantService
 from app.services import UserService
@@ -69,6 +71,11 @@ async def get_database_service(session: Session = Depends(get_session_factory)):
     return DatabaseService(database_repository=database_repository)
 
 
+async def get_history_service(session: Session = Depends(get_session_factory)):
+    history_repository = HistoryRepository(session_factory=session)
+    return HistoryService(history_repository=history_repository)
+
+
 FindQueryParameters = Annotated[FindBase, Depends()]
 SessionDependency = Annotated[Session, Depends(get_db)]
 UserServiceDependency = Annotated[UserService, Depends(get_user_service)]
@@ -77,4 +84,5 @@ AuthServiceDependency = Annotated[AuthService, Depends(get_auth_service)]
 TenantServiceDependency = Annotated[TenantService, Depends(get_tenant_service)]
 RoleServiceDependency = Annotated[RoleService, Depends(get_role_service)]
 DatabaseServiceDependency = Annotated[DatabaseService, Depends(get_database_service)]
+HistoryServiceDependency = Annotated[HistoryService, Depends(get_history_service)]
 CurrentActiveUserDependency = Annotated[User, Depends(get_current_active_user)]

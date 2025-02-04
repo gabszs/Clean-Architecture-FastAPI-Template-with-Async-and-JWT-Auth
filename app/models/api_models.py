@@ -1,3 +1,4 @@
+from typing import List
 from typing import Optional
 from uuid import UUID
 
@@ -5,6 +6,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 from app.models.base_model import Base
 from app.models.models_enums import DatabaseType
@@ -46,3 +48,14 @@ class Database(Base):
     db_type: Mapped[DatabaseType] = mapped_column(nullable=False)
     connection_string: Mapped[str] = mapped_column(unique=True, nullable=False)
     description: Mapped[Optional[str]]
+
+    history: Mapped[List["History"]] = relationship(back_populates="database", cascade="all, delete-orphan", init=False)
+
+
+class History(Base):
+    __tablename__ = "history"
+
+    name: Mapped[Optional[str]]
+    schemas: Mapped[Optional[str]]
+    database_id: Mapped[UUID] = mapped_column(ForeignKey("databases.id"))
+    database: Mapped["Database"] = relationship(back_populates="history")
