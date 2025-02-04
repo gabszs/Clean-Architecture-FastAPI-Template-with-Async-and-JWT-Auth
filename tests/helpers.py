@@ -11,13 +11,42 @@ from app.core.security import get_password_hash
 from app.core.settings import settings
 from app.models import User
 from app.models.models_enums import UserRoles
+from app.schemas.database_schema import Database
 from app.schemas.role_schema import Role
 from app.schemas.tenant_schema import Tenant
 from tests.factories import create_factory_users
+from tests.factories import DatabaseFactory
 from tests.factories import RoleFactory
 from tests.factories import TenantFactory
 from tests.schemas import UserModelSetup
 from tests.schemas import UserSchemaWithHashedPassword
+
+
+async def setup_database_data(
+    session: AsyncSession, database_qty: int = 1, index: Optional[int] = None
+) -> Union[List[Database], Database]:
+    databases = DatabaseFactory.create_batch(database_qty)
+    database_list: List[Database] = []
+    session.add_all(databases)
+    await session.commit()
+
+    for database in databases:
+        await session.refresh(database)
+        database_list.append(
+            Database(
+                name=database.name,
+                db_type=database.db_type,
+                connection_string=database.connection_string,
+                description=database.description,
+                id=database.id,
+                created_at=database.created_at,
+                updated_at=database.updated_at,
+            )
+        )
+
+    if index is not None:
+        return database_list[index]
+    return database_list
 
 
 async def setup_tenant_data(

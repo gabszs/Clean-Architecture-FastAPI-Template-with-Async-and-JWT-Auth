@@ -5,9 +5,11 @@ import factory
 from factory.base import StubObject
 from slugify import slugify  # type: ignore
 
+from app.models import Database
 from app.models import Role
 from app.models import Tenant
 from app.models import User
+from app.models.models_enums import DatabaseType
 from app.models.models_enums import UserRoles
 
 
@@ -50,6 +52,16 @@ class RoleFactory(factory.Factory):
 
     tenant_id = None
     name = factory.Sequence(lambda x: f"role_{x}")
+    description = factory.LazyAttribute(lambda x: f"{x.name} description")
+
+
+class DatabaseFactory(factory.Factory):
+    class Meta:
+        model = Database
+
+    name = factory.Sequence(lambda x: f"database_{x}")
+    db_type = DatabaseType.SQLSERVER
+    connection_string = factory.LazyAttribute(lambda x: f"{x.name}_{x.db_type}")
     description = factory.LazyAttribute(lambda x: f"{x.name} description")
 
 

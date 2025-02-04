@@ -25,10 +25,12 @@ from app.main import app
 from app.models import Base
 from app.models import User
 from app.models.models_enums import UserRoles
+from tests.factories import DatabaseFactory
 from tests.factories import RoleFactory
 from tests.factories import TenantFactory
 from tests.factories import UserFactory
 from tests.helpers import add_users_models
+from tests.helpers import setup_database_data
 from tests.helpers import setup_role_data
 from tests.helpers import setup_tenant_data
 from tests.helpers import token
@@ -234,3 +236,18 @@ async def roles(session: AsyncSession):
 @pytest.fixture
 def role_factory() -> TenantFactory:
     return RoleFactory()
+
+
+@pytest.fixture()
+async def database(session: AsyncSession):
+    return await setup_database_data(session, index=0)
+
+
+@pytest.fixture()
+async def databases(session: AsyncSession):
+    return await setup_database_data(session, database_qty=5, index=0)
+
+
+@pytest.fixture
+def database_factory() -> TenantFactory:
+    return DatabaseFactory()
