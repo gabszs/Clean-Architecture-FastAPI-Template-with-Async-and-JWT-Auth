@@ -54,7 +54,7 @@ async def test_create_same_roles_with_diferent_should_return_201_POST(client, se
         headers=admin_user_token,
     )
     response_json = response.json()
-    
+
     assert response.status_code == 201
     assert response_json["name"] == role.name
     assert response_json["description"] == role.description
@@ -220,7 +220,7 @@ async def test_put_role_should_return_403_FORBIDDEN(session, client, role_factor
         "description": role_factory.description,
     }
     response = await client.put(f"{base_role_route}/{role.id}", headers=normal_user_token, json=different_role)
-    
+
     assert response.json() == {"detail": "Not enough permissions"}
     assert response.status_code == 403
 

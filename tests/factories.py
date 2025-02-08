@@ -32,8 +32,7 @@ class UserFactory(factory.Factory):
     username = factory.Sequence(lambda x: f"user_{x}")
     email = factory.LazyAttribute(lambda x: f"{x.username}@test.com")
     password = factory.LazyAttribute(lambda obj: f"{obj.username}_password")
-    role = UserRoles.BASE_USER
-    is_active = None
+    is_active = True
 
 
 class TenantFactory(factory.Factory):

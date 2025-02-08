@@ -137,18 +137,16 @@ async def setup_users_data(
     return return_list
 
 
-async def token(client, session: AsyncSession, base_auth_route: str = "/v1/auth", **kwargs):
-    user = await add_users_models(session=session, index=0, **kwargs)
+async def token(client, session: AsyncSession, user):
     response = await client.post(
-        f"{base_auth_route}/sign-in",
-        json={"email__eq": user.email, "password": user.password},  # type: ignore
-    )  # type: ignore
+        f"{settings.base_auth_route}/sign-in", json={"email": user.email, "password": user.clean_password}
+    )
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
 
 
 async def get_user_token(client: AsyncClient, user: UserSchemaWithHashedPassword) -> Dict[str, str]:
     response = await client.post(
-        f"{settings.base_auth_route}/sign-in", json={"email__eq": user.email, "password": user.password}
+        f"{settings.base_auth_route}/sign-in", json={"email": user.email, "password": user.password}
     )
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
 

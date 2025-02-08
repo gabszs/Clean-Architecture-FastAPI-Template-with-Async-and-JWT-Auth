@@ -20,20 +20,18 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import SessionTransaction
 
 from app.core.database import get_session_factory
+from app.core.security import get_password_hash
 from app.core.settings import settings
 from app.main import app
 from app.models import Base
-from app.models import User
 from app.models.models_enums import UserRoles
 from tests.factories import RoleFactory
 from tests.factories import TenantFactory
 from tests.factories import UserFactory
-from tests.helpers import add_users_models
 from tests.helpers import setup_role_data
 from tests.helpers import setup_tenant_data
 from tests.helpers import token
 from tests.schemas import UserModelSetup
-from tests.schemas import UserSchemaWithHashedPassword
 
 
 sync_db_url = settings.TEST_DATABASE_URL.replace("+asyncpg", "")  # type: ignore
@@ -69,7 +67,7 @@ def default_username_search_options() -> Dict[str, Union[str, int]]:
 
 
 @pytest.fixture
-def factory_user() -> UserFactory:
+def user_factory() -> UserFactory:
     return UserFactory()
 
 
@@ -167,43 +165,50 @@ async def session() -> AsyncGenerator:
 
 
 @pytest.fixture()
-async def normal_user_token(client: AsyncClient, session: AsyncSession) -> Dict[str, str]:
-    return await token(client, session)
+async def normal_user(session: AsyncSession, user_factory) -> UserFactory:
+    clean_password = user_factory.password
+    user_factory.password = get_password_hash(user_factory.password)
+    session.add(user_factory)
+    await session.commit()
+    await session.refresh(user_factory)
+
+    user_factory.clean_password = clean_password
+    return user_factory
 
 
 @pytest.fixture()
-async def moderator_user_token(client: AsyncClient, session: AsyncSession) -> Dict[str, str]:
-    return await token(client, session, user_role=UserRoles.MODERATOR)
+async def base_user_token(client: AsyncClient, session: AsyncSession, normal_user) -> Dict[str, str]:
+    return await token(client, session, normal_user)
 
 
-@pytest.fixture()
-async def admin_user_token(client: AsyncClient, session: AsyncSession) -> Dict[str, str]:
-    return await token(client, session, user_role=UserRoles.ADMIN)
+# @pytest.fixture()
+# async def moderator_user_token(client: AsyncClient, session: AsyncSession) -> Dict[str, str]:
+#     return await token(client, session, user_role=UserRoles.MODERATOR)
 
 
-@pytest.fixture()
-async def disable_normal_user_token(client: AsyncClient, session: AsyncSession) -> Dict[str, str]:
-    return await token(client, session, user_role=UserRoles.MODERATOR, is_active=False)
+# @pytest.fixture()
+# async def admin_user_token(client: AsyncClient, session: AsyncSession) -> Dict[str, str]:
+#     return await token(client, session, user_role=UserRoles.ADMIN)
 
 
-@pytest.fixture()
-async def normal_user(session: AsyncSession) -> List[Union[UserSchemaWithHashedPassword, User]]:
-    return await add_users_models(session, index=0)
+# @pytest.fixture()
+# async def disable_normal_user_token(client: AsyncClient, session: AsyncSession) -> Dict[str, str]:
+#     return await token(client, session, user_role=UserRoles.MODERATOR, is_active=False)
 
 
-@pytest.fixture()
-async def moderator_user(session: AsyncSession) -> List[Union[UserSchemaWithHashedPassword, User]]:
-    return await add_users_models(session, index=0, user_role=UserRoles.MODERATOR)
+# @pytest.fixture()
+# async def moderator_user(session: AsyncSession) -> List[Union[UserSchemaWithHashedPassword, User]]:
+#     return await add_users_models(session, index=0, user_role=UserRoles.MODERATOR)
 
 
-@pytest.fixture()
-async def admin_user(session: AsyncSession) -> List[Union[UserSchemaWithHashedPassword, User]]:
-    return await add_users_models(session, index=0, user_role=UserRoles.ADMIN)
+# @pytest.fixture()
+# async def admin_user(session: AsyncSession) -> List[Union[UserSchemaWithHashedPassword, User]]:
+#     return await add_users_models(session, index=0, user_role=UserRoles.ADMIN)
 
 
-@pytest.fixture()
-async def disable_normal_user(session: AsyncSession) -> List[Union[UserSchemaWithHashedPassword, User]]:
-    return await add_users_models(session, index=0, user_role=UserRoles.BASE_USER, is_active=False)
+# @pytest.fixture()
+# async def disable_normal_user(session: AsyncSession) -> List[Union[UserSchemaWithHashedPassword, User]]:
+#     return await add_users_models(session, index=0, user_role=UserRoles.BASE_USER, is_active=False)
 
 
 @pytest.fixture()
