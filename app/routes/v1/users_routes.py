@@ -18,7 +18,6 @@ router = APIRouter(prefix="/user", tags=["user"])
 
 
 @router.get("/", response_model=FindUserResult)
-@authorize(role=[UserRoles.MODERATOR, UserRoles.ADMIN])
 async def get_user_list(
     service: UserServiceDependency, current_user: CurrentUserDependency, find_query: FindBase = Depends()
 ):
@@ -51,6 +50,14 @@ async def update_user(
 async def enabled_user(user_id: UUID, service: UserServiceDependency, current_user: CurrentUserDependency):
     await service.patch_attr(id=user_id, attr="is_active", value=True, current_user=current_user)
     return Message(detail="User has been enabled successfully")
+
+
+@router.patch("/{user_id}/tenant/{tenant_id}", response_model=Message)
+async def set_user_tenant(
+    user_id: UUID, tenant_id: UUID, service: UserServiceDependency, current_user: CurrentUserDependency
+):
+    await service.set_tenant_id(id=user_id, tenant_id=tenant_id)
+    return Message(detail="User has been successfully added to the tenant")
 
 
 @router.delete("/disable/{user_id}", response_model=Message)
