@@ -3,16 +3,22 @@ from uuid import UUID
 
 from app.core.security import get_password_hash
 from app.models import User as UserModel
-from app.repository.user_repository import UserRepository
+from app.repository import TenantRepository
+from app.repository import UserRepository
 from app.schemas.user_schema import BaseUserWithPassword
 from app.services.base_service import BaseService
 from app.services.base_service import FindBase
 
 
 class UserService(BaseService):
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepository, tenant_repository: TenantRepository):
         self.user_repository = user_repository
+        self._tenant_repository = tenant_repository
         super().__init__(user_repository)
+
+    async def set_tenant_id(self, id: UUID, tenant_id: UUID):
+        await self._tenant_repository.read_by_id(tenant_id)  # check if exists
+        return await self._repository.update_attr(id, "tenant_id", tenant_id)
 
     async def get_list(self, schema: FindBase):  # type: ignore
         return await self._repository.read_by_options(schema, unique=True)
