@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -6,7 +7,7 @@ from app.schemas.user_schema import User
 
 
 class SignIn(BaseModel):
-    email__eq: str
+    email: str
     password: str
 
 
@@ -20,6 +21,13 @@ class Payload(BaseModel):
     id: str
     email: str
     username: str
+
+
+class TenantPayload(BaseModel):
+    id: str
+    email: str
+    username: str
+    tenant_id: UUID
 
 
 class Token(BaseModel):
