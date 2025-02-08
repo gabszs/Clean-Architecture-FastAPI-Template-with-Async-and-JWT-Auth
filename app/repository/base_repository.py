@@ -37,10 +37,20 @@ class BaseRepository:
         except AttributeError:
             raise ValidationError(f"Unprocessable Entity, attribute '{schema.ordering}' does not exist")
 
-    async def get_model_by_id(self, session: AsyncSession, id: Union[UUID, int], not_unique_pk: bool = False):
-        if not_unique_pk:
-            return await session.scalar(select(self.model).where(self.model.id == id))
-        return await session.get(self.model, id)
+    async def get_model_by_id(
+        self, session: AsyncSession, id: Union[UUID, int], use_select: bool = False, eager: bool = False
+    ):
+        if not (use_select and eager):
+            return await session.get(self.model, id)
+
+        query = select(self.model).where(self.model.id == id)
+
+        if eager:
+            for eager_relation in getattr(self.model, "eagers", []):
+                query = query.options(joinedload(getattr(self.model, eager_relation)))
+
+        result = await session.execute(query)
+        return result.scalars().first()
 
     def get_compiled_stmt(self, stmt: select) -> str:
         return str(stmt.compile(compile_kwargs={"literal_binds": True}))
@@ -71,9 +81,9 @@ class BaseRepository:
                 },
             }
 
-    async def read_by_id(self, id: Union[UUID, int], not_unique_pk: bool = False):
+    async def read_by_id(self, id: Union[UUID, int], eager: bool = False, use_select: bool = False):
         async with self.session_factory() as session:
-            result = await self.get_model_by_id(session, id, not_unique_pk)
+            result = await self.get_model_by_id(session, id, eager, use_select)
             if not result:
                 raise NotFoundError(detail=f"id not found: {id}")
             return result
@@ -95,17 +105,22 @@ class BaseRepository:
                 session.add(model)
                 await session.commit()
                 await session.refresh(model)
-
-            except IntegrityError as _:
+            except IntegrityError:
+                # fazer essa validcao depois PQP
+                # if isinstance(error.orig, ForeignKeyViolationError):
+                #     print("-----------")
+                #     raise BadRequestError(detail=error.detail)
+                # from icecream import ic
+                # ic(error.orig,error, type(error.orig))
                 raise DuplicatedError(detail=f"{self.model.__tablename__.capitalize()[:-1]} already registered")
             except Exception as error:
                 raise BadRequestError(str(error))
             return model
 
-    async def update(self, id: Union[UUID, int], schema, not_unique_pk: bool = True):
+    async def update(self, id: Union[UUID, int], schema, use_select: bool = True):
         async with self.session_factory() as session:
             schema = schema.model_dump()
-            result = await self.get_model_by_id(session, id, not_unique_pk)
+            result = await self.get_model_by_id(session, id, use_select)
 
             if not result:
                 raise NotFoundError(detail=f"id not found: {id}")
@@ -123,9 +138,9 @@ class BaseRepository:
                 error_message = ":".join(str(e.orig).replace("\n", " ").split(":")[1:])
                 raise DuplicatedError(detail=error_message)
 
-    async def update_attr(self, id: Union[UUID, int], column: str, value: Any, not_unique_pk: bool = False):
+    async def update_attr(self, id: Union[UUID, int], column: str, value: Any, use_select: bool = False):
         async with self.session_factory() as session:
-            result = await self.get_model_by_id(session, id, not_unique_pk)
+            result = await self.get_model_by_id(session, id, use_select)
             if not result:
                 raise NotFoundError(detail=f"id not found: {id}")
             if value == getattr(result, column):
@@ -148,9 +163,9 @@ class BaseRepository:
             await session.commit()
             return self.read_by_id(id)
 
-    async def delete_by_id(self, id: Union[UUID, int], not_unique_pk: bool = False):
+    async def delete_by_id(self, id: Union[UUID, int], use_select: bool = False):
         async with self.session_factory() as session:
-            result = await self.get_model_by_id(session, id, not_unique_pk)
+            result = await self.get_model_by_id(session, id, use_select)
             if not result:
                 raise NotFoundError(detail=f"not found id: {id}")
             await session.delete(result)
