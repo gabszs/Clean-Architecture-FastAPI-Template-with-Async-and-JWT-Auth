@@ -44,9 +44,9 @@ class ModelBaseInfo(BaseModel):
 
 
 class FindBase(BaseModel):
-    ordering: Optional[str] = settings.ORDERING
+    ordering: str = settings.ORDERING
     page: Annotated[int, Field(gt=0)] = settings.PAGE
-    page_size: Optional[Union[int, str]] = settings.PAGE_SIZE
+    page_size: Union[int, str] = settings.PAGE_SIZE
 
     @field_validator("page_size")
     @classmethod
@@ -62,13 +62,13 @@ class FindBase(BaseModel):
             return value
 
 
-class SearchOptions(FindBase):
+class SearchMetadata(FindBase):
     total_count: Optional[int]
 
 
 class FindResult(BaseModel):
-    founds: Optional[List]
-    search_options: Optional[SearchOptions]
+    data: Optional[List]
+    search_metadata: Optional[SearchMetadata]
 
 
 class FindDateRange(BaseModel):
@@ -80,8 +80,8 @@ class FindDateRange(BaseModel):
 
 class FindModelResult(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    founds: List[Any]
-    search_options: SearchOptions
+    data: List[Any]
+    search_metadata: SearchMetadata
 
 
 class Blank(BaseModel):

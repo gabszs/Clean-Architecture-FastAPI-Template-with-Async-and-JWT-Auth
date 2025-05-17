@@ -43,7 +43,7 @@ class UpsertUser(BaseModel):
 
 
 class FindUserResult(FindModelResult):
-    founds: List[User]
+    data: List[User]
 
 
 class UserWithCleanPassword(BaseUserWithPassword):
