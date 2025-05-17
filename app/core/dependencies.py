@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.database import get_session_factory
+from app.core.database import sessionmanager
 from app.core.exceptions import AuthError
 from app.core.security import JWTBearer
 from app.core.settings import settings
@@ -18,12 +18,15 @@ from app.services.auth_service import AuthService
 from app.services.user_service import UserService
 
 
-async def get_user_service(session: Session = Depends(get_session_factory)):
-    user_repository = UserRepository(session_factory=session)
+async def get_user_service(session: Session = Depends(sessionmanager.session)) -> UserService:
+    user_repository = UserRepository(session=session)
     return UserService(user_repository)
 
 
-async def get_current_user(token: str = Depends(JWTBearer()), service: UserService = Depends(get_user_service)) -> User:
+async def get_current_user(
+    token: str = Depends(JWTBearer()),
+    service: UserService = Depends(get_user_service),
+) -> User:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=settings.ALGORITHM)
         token_data = Payload(**payload)
@@ -41,8 +44,8 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
-async def get_auth_service(session: Session = Depends(get_session_factory)):
-    user_repository = UserRepository(session_factory=session)
+async def get_auth_service(session: Session = Depends(sessionmanager.session)):
+    user_repository = UserRepository(session=session)
     return AuthService(user_repository=user_repository)
 
 
