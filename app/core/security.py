@@ -13,10 +13,8 @@ from fastapi.security import HTTPBearer
 from jose import jwt
 
 from app.core.exceptions import AuthError
-from app.core.settings import Settings
+from app.core.settings import settings
 from app.models.models_enums import UserRoles
-
-settings = Settings()
 
 secret_key = settings.SECRET_KEY
 algorithm = settings.ALGORITHM
@@ -71,14 +69,19 @@ def get_password_hash(password: str) -> str:
 
 def decote_jwt(token: str) -> Optional[str]:
     try:
-        decoded_token = jwt.decode(token, secret_key, algorithms=algorithm, options={"verify_exp": False})
+        decoded_token = jwt.decode(
+            token,
+            secret_key,
+            algorithms=algorithm,
+            options={"verify_exp": False},
+        )
         return decoded_token if decoded_token["exp"] >= int(round(datetime.now().timestamp())) else None
     except Exception as _:
         return None
 
 
 class JWTBearer(HTTPBearer):
-    def __init__(self, auto_error: bool = True):
+    def __init__(self, auto_error: bool = False):
         super().__init__(auto_error=auto_error)
 
     async def __call__(self, request: Request) -> HTTPAuthorizationCredentials | None:
@@ -86,12 +89,12 @@ class JWTBearer(HTTPBearer):
 
         if credentials:
             if not credentials.scheme == "Bearer":
-                raise AuthError(detail="Invalid authentication scheme")
+                raise AuthError(detail="Authentication failed: invalid scheme, expected 'Bearer'")
             if not self.verify_jwt(credentials.credentials):
-                raise AuthError(detail="Invalid token or expired token")
+                raise AuthError(detail="Authentication failed: token is invalid or expired")
             return credentials.credentials
         else:
-            raise AuthError(detail="Invalid authorization code")
+            raise AuthError(detail="Authentication failed: no authorization token provided")
 
     def verify_jwt(self, jwt_token: str) -> bool:
         is_token_valid: bool = False

@@ -22,5 +22,8 @@ class Base(MappedAsDataclass, DeclarativeBase):
     )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), init=False)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), init=False
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        init=False,
     )
