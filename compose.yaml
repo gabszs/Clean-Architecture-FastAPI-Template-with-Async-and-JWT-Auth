@@ -13,7 +13,7 @@ services:
       - DATABASE_URL="postgresql+asyncpg://app_user:app_password@database:5432/app_db"
     depends_on:
       - database
-      
+
   database:
     image: postgres
     ports:
