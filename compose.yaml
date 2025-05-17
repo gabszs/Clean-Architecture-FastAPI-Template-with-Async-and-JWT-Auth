@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8007:80"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL="postgresql+asyncpg://app_user:app_password@database:5432/app_db"
+    depends_on:
+      - database
+      
+  database:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_DB: app_db
+      POSTGRES_PASSWORD: app_password
