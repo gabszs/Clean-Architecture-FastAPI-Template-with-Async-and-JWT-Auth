@@ -2,6 +2,7 @@ from typing import Union
 from uuid import UUID
 
 from app.core.security import get_password_hash
+from app.core.telemetry import instrument
 from app.models import User as UserModel
 from app.repository.user_repository import UserRepository
 from app.schemas.user_schema import BaseUserWithPassword
@@ -9,6 +10,7 @@ from app.services.base_service import BaseService
 from app.services.base_service import FindBase
 
 
+@instrument
 class UserService(BaseService):
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
