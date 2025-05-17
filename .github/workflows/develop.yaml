@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      IS_PROD: "true"
       DATABASE_URL: ${{secrets.DATABASE_URL}}
       TEST_DATABASE_URL: ${{vars.TEST_DATABASE_URL}}
       SECRET_KEY: ${{secrets.SECRET_KEY}}

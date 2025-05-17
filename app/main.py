@@ -17,9 +17,7 @@ def init_app(init_db=True):
     lifespan = None
 
     if init_db:
-        print(f"DATABASE_URL{settings.DATABASE_URL:}")
         sessionmanager.init(settings.DATABASE_URL)
-        # sessionmanager.run_migrations()
 
         @asynccontextmanager
         async def lifespan(app: FastAPI):
