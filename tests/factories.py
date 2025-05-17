@@ -33,5 +33,9 @@ class UserFactory(factory.Factory):
     is_active = None
 
 
-def create_factory_users(users_qty: int = 1, user_role: UserRoles = UserRoles.BASE_USER, is_active=True):
+def create_factory_users(
+    users_qty: int = 1,
+    user_role: UserRoles = UserRoles.BASE_USER,
+    is_active=True,
+):
     return UserFactory.create_batch(users_qty, role=user_role, is_active=is_active)

@@ -19,7 +19,6 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import SessionTransaction
 
-from app.core.database import get_session_factory
 from app.core.settings import settings
 from app.main import app
 from app.models import Base
@@ -32,6 +31,8 @@ from tests.schemas import UserModelSetup
 from tests.schemas import UserSchemaWithHashedPassword
 
 
+if settings.TEST_DATABASE_URL is None:
+    raise KeyError("Variável de ambiente 'TEST_DATABASE_URL' não está setada.")
 sync_db_url = settings.TEST_DATABASE_URL.replace("+asyncpg", "")
 
 
@@ -127,6 +128,7 @@ def setup_test_db(setup_db: Generator) -> Generator:
 @pytest.fixture
 async def session() -> AsyncGenerator:
     async_engine = create_async_engine(settings.TEST_DATABASE_URL)
+
     async with async_engine.connect() as conn:
         await conn.begin()
         await conn.begin_nested()
@@ -149,11 +151,13 @@ async def session() -> AsyncGenerator:
 
         def test_get_session() -> Generator:
             try:
-                yield AsyncSessionLocal
+                yield AsyncSessionLocal()
             except SQLAlchemyError:
                 pass
 
-        app.dependency_overrides[get_session_factory] = test_get_session
+        from app.core.database import sessionmanager
+
+        app.dependency_overrides[sessionmanager.session] = test_get_session
 
         yield async_session
         await async_session.close()
