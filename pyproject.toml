@@ -33,7 +33,6 @@ faker = "^37.3.0"
 ipykernel = "^6.29.5"
 pytest = "^8.3.5"
 pytest-postgresql = "^7.0.1"
-icecream = "^2.1.4"
 psycopg2 = "^2.9.10"
 
 [tool.poetry.group.telemetry.dependencies]

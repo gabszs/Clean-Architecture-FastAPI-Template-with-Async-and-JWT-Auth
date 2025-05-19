@@ -24,6 +24,11 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY app ./app
 COPY pyproject.toml poetry.lock ./
+COPY migrations ./migrations
+COPY alembic.ini ./
+
 EXPOSE 80
 RUN opentelemetry-bootstrap -a install
-CMD ["opentelemetry-instrument", "uvicorn", "--host", "0.0.0.0", "--port", "80", "app.main:app"]
+
+CMD [ "sh", "-c", "alembic upgrade head && opentelemetry-instrument uvicorn --proxy-headers --host 0.0.0.0 --port 80 app.main:app"]
+# CMD ["opentelemetry-instrument", "uvicorn", "--host", "0.0.0.0", "--port", "80", "app.main:app"]
