@@ -2,13 +2,14 @@ from datetime import datetime
 
 from pydantic import BaseModel
 from pydantic import EmailStr
+from pydantic import Field
 
 from app.schemas.user_schema import User
 
 
 class SignIn(BaseModel):
-    email: EmailStr
-    password: str
+    email: EmailStr = Field(default="test@test.com")
+    password: str = Field(default="test")
 
 
 class SignUp(BaseModel):

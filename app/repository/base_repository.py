@@ -54,7 +54,7 @@ class BaseRepository:
         return str(query.compile(compile_kwargs={"literal_binds": True}))
 
     async def read_by_options(self, schema: FindBase, eager: bool = False, unique: bool = False):
-        logger.debug(f"Reading {self.model.__name__} by options: {schema.dict(exclude_unset=True)}")
+        logger.debug(f"Reading {self.model.__name__} by options: {schema.model_dump(exclude_unset=True)}")
         order_query = await self.get_order_by(schema)
         query = select(self.model).order_by(order_query)
         if eager:
@@ -62,6 +62,19 @@ class BaseRepository:
                 query = query.options(joinedload(getattr(self.model, eager_relation)))
         if schema.page_size != "all":
             query = query.offset((schema.page - 1) * (schema.page_size)).limit(int(schema.page_size))
+
+        if schema.created_before:
+            query = query.where(self.model.created_at < schema.created_before)
+
+        if schema.created_on_or_before:
+            query = query.where(self.model.created_at <= schema.created_on_or_before)
+
+        if schema.created_after:
+            query = query.where(self.model.created_at > schema.created_after)
+
+        if schema.created_on_or_after:
+            query = query.where(self.model.created_at >= schema.created_on_or_after)
+
         query = await self.session.execute(query)
         if unique:
             query = query.unique()
@@ -74,6 +87,10 @@ class BaseRepository:
                 "page_size": schema.page_size,
                 "ordering": schema.ordering,
                 "total_count": len(result),
+                "created_before": schema.created_before,
+                "created_on_or_before": schema.created_on_or_before,
+                "created_after": schema.created_after,
+                "created_on_or_after": schema.created_on_or_after,
             },
         }
 

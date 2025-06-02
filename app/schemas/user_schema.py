@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import EmailStr
+from pydantic import Field
 
 from app.models.models_enums import UserRoles
 from app.schemas.base_schema import AllOptional
@@ -13,12 +14,12 @@ from app.schemas.base_schema import ModelBaseInfo
 
 
 class BaseUser(BaseModel):
-    email: EmailStr
-    username: str
+    email: EmailStr = Field(default="test@test.com")
+    username: str = Field(default="test")
 
 
 class BaseUserWithPassword(BaseUser):
-    password: str
+    password: str = Field(default="test")
 
 
 class User(BaseUser, ModelBaseInfo):
