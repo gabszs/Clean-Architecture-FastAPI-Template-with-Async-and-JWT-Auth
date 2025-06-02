@@ -2,11 +2,14 @@ from typing import AsyncGenerator
 from typing import Dict
 from typing import Generator
 from typing import List
+from typing import Optional
 from typing import Union
 from uuid import UUID
 from uuid import uuid4
 
 import pytest
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
 from httpx import ASGITransport
 from httpx import AsyncClient
 from sqlalchemy import create_engine
@@ -51,18 +54,30 @@ def batch_setup_users() -> List[UserModelSetup]:
 
 
 @pytest.fixture
-def default_search_options() -> Dict[str, Union[str, int]]:
-    return {"ordering": "id", "page": 1, "page_size": "all"}
+def default_search_options() -> Dict[str, Optional[Union[str, int]]]:
+    return {
+        "ordering": "id",
+        "page": 1,
+        "page_size": "all",
+    }
 
 
 @pytest.fixture
-def default_created_search_options() -> Dict[str, Union[str, int]]:
-    return {"ordering": "created_at", "page": 1, "page_size": "all"}
+def default_created_search_options() -> Dict[str, Optional[Union[str, int]]]:
+    return {
+        "ordering": "created_at",
+        "page": 1,
+        "page_size": "all",
+    }
 
 
 @pytest.fixture
-def default_username_search_options() -> Dict[str, Union[str, int]]:
-    return {"ordering": "username", "page": 1, "page_size": "all"}
+def default_username_search_options() -> Dict[str, Optional[Union[str, int]]]:
+    return {
+        "ordering": "username",
+        "page": 1,
+        "page_size": "all",
+    }
 
 
 @pytest.fixture
@@ -79,6 +94,11 @@ def anyio_backend() -> str:
 async def client() -> AsyncGenerator:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="https://test") as client:
         yield client
+
+
+@pytest.fixture(autouse=True, scope="session")
+def setup_cache():
+    FastAPICache.init(InMemoryBackend(), cache_status_header=settings.CACHE_STATUS_HEADER, expire=360)
 
 
 @pytest.fixture(scope="session")
