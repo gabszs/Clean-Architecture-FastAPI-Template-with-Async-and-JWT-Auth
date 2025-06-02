@@ -2,6 +2,9 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from redis import asyncio as aioredis
 
 from app.core.database import sessionmanager
 from app.core.settings import settings
@@ -17,10 +20,18 @@ def init_app(init_db=True):
     lifespan = None
 
     if init_db:
-        sessionmanager.init(settings.DATABASE_URL)
 
         @asynccontextmanager
         async def lifespan(app: FastAPI):
+            sessionmanager.init(settings.DATABASE_URL)
+            redis = aioredis.from_url(settings.REDIS_URL)
+            FastAPICache.init(
+                RedisBackend(redis),
+                # prefix=settings.CACHE_PREFIX,
+                expire=settings.CACHE_TTS,
+                cache_status_header=settings.CACHE_STATUS_HEADER,
+            )
+
             logger.info(f"{settings.PROJECT_NAME} initialization started.")
             yield
             logger.info(f"{settings.PROJECT_NAME} shutdown completed.")
@@ -28,14 +39,10 @@ def init_app(init_db=True):
                 await sessionmanager.close()
 
     app = FastAPI(
-        title="CV-Api",
-        description="CV Management Web API with basic auth CRUD built by @GabrielCarvalho for my girlfriend",
-        contact={
-            "name": "Gabriel Carvalho",
-            "url": "https://www.linkedin.com/in/gabzsz/",
-            "email": "gabriel.carvalho@huawei.com",
-        },
-        summary="WebAPI built on best market practices such as TDD, Clean Architecture, Data Validation with Pydantic V2",
+        title=settings.title,
+        description=settings.description,
+        contact=settings.contact,
+        summary=settings.summary,
         lifespan=lifespan,
     )
     app.include_router(app_routes)

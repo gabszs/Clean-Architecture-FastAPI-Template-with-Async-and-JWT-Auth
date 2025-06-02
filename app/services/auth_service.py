@@ -1,6 +1,7 @@
 from datetime import timedelta
 from typing import List
 
+from app.core.cache import CacheManager
 from app.core.exceptions import InvalidCredentials
 from app.core.security import create_access_token
 from app.core.security import get_password_hash
@@ -19,9 +20,9 @@ from app.services.base_service import BaseService
 
 @instrument
 class AuthService(BaseService):
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepository, cache: CacheManager) -> None:
         self.user_repository = user_repository
-        super().__init__(user_repository)
+        super().__init__(user_repository, cache)
 
     async def sign_in(self, sign_in_info: SignIn):
         user: List[User] = await self.user_repository.read_by_email(email=sign_in_info.email, unique=True)

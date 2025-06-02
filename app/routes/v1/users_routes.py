@@ -2,7 +2,9 @@ from uuid import UUID
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi_cache.decorator import cache
 
+from app.core.cache import cache_key_builder
 from app.core.dependencies import CurrentUserDependency
 from app.core.dependencies import FindBase
 from app.core.dependencies import UserServiceDependency
@@ -18,7 +20,7 @@ router = APIRouter(prefix="/user", tags=["user"])
 
 
 @router.get("/", response_model=FindUserResult)
-@authorize(role=[UserRoles.MODERATOR, UserRoles.ADMIN])
+@authorize(role=[UserRoles.MODERATOR, UserRoles.ADMIN, UserRoles.BASE_USER])
 async def get_user_list(
     service: UserServiceDependency,
     current_user: CurrentUserDependency,
@@ -27,14 +29,15 @@ async def get_user_list(
     return await service.get_list(find_query)
 
 
-@router.get("/{user_id}", response_model=User)
+@router.get("/{id}", response_model=User)
+@cache(key_builder=cache_key_builder("UserService", "id"))
 @authorize(role=[UserRoles.MODERATOR, UserRoles.ADMIN], allow_same_id=True)
-async def get_user_by_id(
-    user_id: UUID,
+async def get_by_id(
+    id: UUID,
     service: UserServiceDependency,
     current_user: CurrentUserDependency,
 ):
-    return await service.get_by_id(user_id)
+    return await service.get_by_id(id)
 
 
 @router.post("/", status_code=201, response_model=User)
@@ -44,44 +47,44 @@ async def create_user(user: BaseUserWithPassword, service: UserServiceDependency
 
 ### importante tem de fazer
 ### adicionar validacao para quano o a request tiver parametros iguais ao do current_user
-@router.put("/{user_id}", response_model=User)
+@router.put("/{id}", response_model=User)
 @authorize(role=[UserRoles.MODERATOR, UserRoles.ADMIN], allow_same_id=True)
 async def update_user(
-    user_id: UUID,
+    id: UUID,
     user: UpsertUser,
     service: UserServiceDependency,
     current_user: CurrentUserDependency,
 ):
-    return await service.patch(id=user_id, schema=user, current_user=current_user)
+    return await service.patch(id=id, schema=user)
 
 
-@router.patch("/enable_user/{user_id}", response_model=Message)
+@router.patch("/enable_user/{id}", response_model=Message)
 @authorize(role=[UserRoles.MODERATOR, UserRoles.ADMIN], allow_same_id=True)
 async def enabled_user(
-    user_id: UUID,
+    id: UUID,
     service: UserServiceDependency,
     current_user: CurrentUserDependency,
 ):
-    await service.patch_attr(id=user_id, attr="is_active", value=True, current_user=current_user)
+    await service.patch_attr(id=id, attr="is_active", value=True)
     return Message(detail="User has been enabled successfully")
 
 
-@router.patch("/disable/{user_id}", response_model=Message)
+@router.patch("/disable/{id}", response_model=Message)
 @authorize(role=[UserRoles.MODERATOR, UserRoles.ADMIN], allow_same_id=True)
 async def disable_user(
-    user_id: UUID,
+    id: UUID,
     service: UserServiceDependency,
     current_user: CurrentUserDependency,
 ):
-    await service.patch_attr(id=user_id, attr="is_active", value=False, current_user=current_user)
+    await service.patch_attr(id=id, attr="is_active", value=False)
     return Message(detail="User has been desabled successfully")
 
 
-@router.delete("/{user_id}", status_code=204)
+@router.delete("/{id}", status_code=204)
 @authorize(role=[UserRoles.ADMIN])
 async def delete_user(
-    user_id: UUID,
+    id: UUID,
     service: UserServiceDependency,
     current_user: CurrentUserDependency,
 ):
-    await service.remove_by_id(user_id)
+    await service.remove_by_id(id)

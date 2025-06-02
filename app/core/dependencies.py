@@ -5,6 +5,7 @@ from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
+from app.core.cache import cache_manager
 from app.core.database import get_db
 from app.core.database import sessionmanager
 from app.core.exceptions import AuthError
@@ -20,7 +21,7 @@ from app.services.user_service import UserService
 
 async def get_user_service(session: Session = Depends(sessionmanager.session)) -> UserService:
     user_repository = UserRepository(session=session)
-    return UserService(user_repository)
+    return UserService(user_repository, cache=cache_manager)
 
 
 async def get_current_user(
@@ -46,7 +47,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 async def get_auth_service(session: Session = Depends(sessionmanager.session)):
     user_repository = UserRepository(session=session)
-    return AuthService(user_repository=user_repository)
+    return AuthService(user_repository=user_repository, cache=cache_manager)
 
 
 FindQueryParameters = Annotated[FindBase, Depends()]
