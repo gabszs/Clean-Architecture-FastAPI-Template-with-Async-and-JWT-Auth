@@ -1,18 +1,20 @@
 version: '3.8'
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8007:80"
-    env_file:
-      - .env
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://app_user:app_password@database:5432/app_db
-    depends_on:
-      - database
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8007:80"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - DATABASE_URL=postgresql+asyncpg://app_user:app_password@database:5432/app_db
+  #     - REDIS_URL=redis://redis:6379
+  #   depends_on:
+  #     - database
+  #     - redis
 
   database:
     image: postgres
@@ -22,3 +24,8 @@ services:
       POSTGRES_USER: app_user
       POSTGRES_DB: app_db
       POSTGRES_PASSWORD: app_password
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379

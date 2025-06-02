@@ -47,4 +47,6 @@ repos:
       - id: mypy
         name: MyPy
         description: This hook runs MyPy to check Python type hints.
+        additional_dependencies:
+          - types-redis
         # args: ["--explicit-package-bases"]

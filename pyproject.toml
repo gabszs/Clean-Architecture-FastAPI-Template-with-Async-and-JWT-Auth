@@ -20,6 +20,8 @@ dependencies = [
     "sqlalchemy[postgresql-asyncpg] (>=2.0.41,<3.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
     "pydantic[email] (>=2.11.4,<3.0.0)",
+    "deprecated (>=1.2.18,<2.0.0)",
+    "fastapi-cache2[redis] (>=0.2.2,<0.3.0)",
 ]
 
 [tool.poetry.group.dev.dependencies]
@@ -34,6 +36,8 @@ ipykernel = "^6.29.5"
 pytest = "^8.3.5"
 pytest-postgresql = "^7.0.1"
 psycopg2 = "^2.9.10"
+icecream = "^2.1.4"
+types-redis = "^4.6.0.20241004"
 
 [tool.poetry.group.telemetry.dependencies]
 opentelemetry-distro = "^0.54b1"
@@ -42,6 +46,9 @@ opentelemetry-exporter-otlp = "^1.33.1"
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
 
 [tool.taskipy.tasks]
 otel_setup = "opentelemetry-bootstrap -a install"
