@@ -27,7 +27,7 @@ def authorize(role: List[UserRoles], allow_same_id: bool = False):
             user_role = kwargs.get("current_user").role
             have_authorization = user_role in role
             if allow_same_id:
-                is_same_id = kwargs.get("current_user").id == kwargs.get("user_id")
+                is_same_id = kwargs.get("current_user").id == kwargs.get("id")
                 if not is_same_id and not have_authorization:
                     raise AuthError("Not enough permissions")
                 return await func(*args, **kwargs)

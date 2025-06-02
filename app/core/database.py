@@ -1,6 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
+from typing import Optional
 
 from alembic import command
 from alembic.config import Config
@@ -17,11 +18,11 @@ from app.models import Base
 
 
 class DatabaseSessionManager:
-    def __init__(self):
-        self._engine: AsyncEngine | None = None  # type: ignore
-        self._sessionmaker: async_sessionmaker | None = None  # type: ignore
+    def __init__(self) -> None:
+        self._engine: Optional[AsyncEngine] = None
+        self._sessionmaker: Optional[async_sessionmaker] = None
 
-    def init(self, database_url: str = settings.DATABASE_URL):
+    def init(self, database_url: str = settings.DATABASE_URL) -> None:
         self._engine = create_async_engine(database_url)
         self._sessionmaker = async_scoped_session(
             async_sessionmaker(autocommit=False, bind=self._engine, expire_on_commit=False),
